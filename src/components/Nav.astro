@@ -1,0 +1,172 @@
+---
+const links = [
+  { href: '/', label: 'Home' },
+  { href: '/services/', label: 'Services' },
+  { href: '/portfolio/', label: 'Portfolio' },
+  { href: '/about/', label: 'About' },
+  { href: '/contact/', label: 'Contact' },
+];
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const path = Astro.url.pathname.replace(base, '') || '/';
+---
+<header class="site-header">
+  <div class="wrap bar">
+    <a class="wordmark" href={`${base}/`}>
+      <span class="wordmark-top">Ferris</span>
+      <span class="wordmark-bottom">Decking Co.</span>
+    </a>
+
+    <input type="checkbox" id="nav-toggle" class="nav-toggle" />
+
+    <nav aria-label="Primary">
+      <ul>
+        {links.map((l) => (
+          <li>
+            <a href={`${base}${l.href}`} aria-current={path === l.href ? 'page' : undefined}>{l.label}</a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+
+    <a class="btn btn-primary bar-cta" href={`${base}/contact/`}>Get a quote</a>
+
+    <label for="nav-toggle" class="nav-toggle-label" aria-label="Menu">
+      <span></span>
+      <span></span>
+      <span></span>
+    </label>
+  </div>
+  <div class="plank-rule"></div>
+</header>
+
+<style>
+  .site-header {
+    background: var(--walnut-950);
+    color: var(--paper);
+    position: relative;
+  }
+  .bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    padding-block: 1.1rem;
+  }
+  .wordmark {
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+    color: var(--paper);
+    font-family: var(--font-display);
+    line-height: 1;
+  }
+  .wordmark-top {
+    font-size: 1.5rem;
+    font-weight: 460;
+  }
+  .wordmark-bottom {
+    font-size: 0.68rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--gold-400);
+    margin-top: 0.3em;
+  }
+  nav ul {
+    display: flex;
+    gap: 2.1rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  nav a {
+    text-decoration: none;
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: rgba(250, 244, 233, 0.78);
+    position: relative;
+    padding-bottom: 4px;
+  }
+  nav a:hover {
+    color: var(--paper);
+  }
+  nav a[aria-current='page'] {
+    color: var(--paper);
+  }
+  nav a[aria-current='page']::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 2px;
+    background: var(--rust-600);
+  }
+  .bar-cta {
+    flex-shrink: 0;
+    box-shadow: none;
+    padding: 0.7em 1.3em;
+  }
+  .bar-cta:hover {
+    transform: none;
+    box-shadow: none;
+    background: var(--rust-700);
+  }
+
+  .nav-toggle {
+    display: none;
+  }
+  .nav-toggle-label {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    width: 32px;
+    height: 32px;
+    cursor: pointer;
+  }
+  .nav-toggle-label span {
+    display: block;
+    height: 2px;
+    background: var(--paper);
+    border-radius: 1px;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+  }
+
+  @media (max-width: 760px) {
+    nav {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: var(--walnut-950);
+      border-top: 1px solid rgba(250, 244, 233, 0.12);
+      padding: 1.4rem 4%;
+    }
+    nav ul {
+      flex-direction: column;
+      gap: 1.3rem;
+    }
+    .bar-cta {
+      display: none;
+    }
+    .nav-toggle-label {
+      display: flex;
+    }
+    .nav-toggle:checked ~ nav {
+      display: block;
+    }
+    .nav-toggle:checked ~ .nav-toggle-label span:nth-child(1) {
+      transform: translateY(7px) rotate(45deg);
+    }
+    .nav-toggle:checked ~ .nav-toggle-label span:nth-child(2) {
+      opacity: 0;
+    }
+    .nav-toggle:checked ~ .nav-toggle-label span:nth-child(3) {
+      transform: translateY(-7px) rotate(-45deg);
+    }
+    .bar {
+      padding-block: 0.9rem;
+    }
+  }
+</style>

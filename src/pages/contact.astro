@@ -1,0 +1,123 @@
+---
+import Layout from '../layouts/Layout.astro';
+import ScribeForm from '../components/ScribeForm.astro';
+import { loadScribeSchema } from '../lib/scribe';
+
+const schema = loadScribeSchema();
+const inquiries = schema.collections.find((c) => c.name === 'inquiries');
+---
+<Layout
+  title="Contact | Ferris Decking Co."
+  description="Get a free deck-building estimate from Ferris Decking Co., serving Lancaster County, PA. Call (717) 555-0183 or send your project details online."
+>
+  <section class="wrap contact-grid">
+    <div class="intro">
+      <p class="eyebrow">Contact</p>
+      <h1>Let's look at your yard</h1>
+      <p class="lede">
+        Send us a few details and we'll get back to you to schedule a free, no-obligation
+        estimate — usually within a business day.
+      </p>
+
+      <dl class="details">
+        <div>
+          <dt>Call or text</dt>
+          <dd><a href="tel:+17175550183">(717) 555-0183</a></dd>
+        </div>
+        <div>
+          <dt>Email</dt>
+          <dd><a href="mailto:hello@ferrisdecking.example">hello@ferrisdecking.example</a></dd>
+        </div>
+        <div>
+          <dt>Service area</dt>
+          <dd>Lancaster County, PA</dd>
+        </div>
+        <div>
+          <dt>Hours</dt>
+          <dd>Mon&ndash;Fri, 8am&ndash;5pm &middot; Saturdays by appointment</dd>
+        </div>
+      </dl>
+
+      <p class="privacy">
+        We only use what you send here to get back to you about your project — nothing is
+        shared beyond that.
+      </p>
+    </div>
+
+    <div class="form-panel">
+      {inquiries ? (
+        <ScribeForm
+          site={schema.site}
+          collection="inquiries"
+          turnstileSiteKey={schema.turnstileSiteKey ?? ''}
+          fields={inquiries.fields}
+        />
+      ) : (
+        <p>The contact form isn't configured yet — call us instead.</p>
+      )}
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .contact-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.1fr;
+    gap: 3.5rem;
+    padding-block: 4rem 5rem;
+  }
+  .intro h1 {
+    font-size: clamp(2rem, 3.6vw, 2.8rem);
+    margin: 0.3em 0 0.5em;
+  }
+  .lede {
+    color: var(--walnut-700);
+    font-size: 1.05rem;
+    max-width: 38ch;
+  }
+  .details {
+    margin: 2.2rem 0;
+    display: grid;
+    gap: 1.1rem;
+  }
+  .details div {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15em;
+  }
+  dt {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--rust-700);
+  }
+  dd {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 1.15rem;
+  }
+  dd a {
+    text-decoration: none;
+    color: var(--walnut-950);
+  }
+  dd a:hover {
+    color: var(--rust-600);
+  }
+  .privacy {
+    font-size: 0.85rem;
+    color: var(--walnut-700);
+    max-width: 36ch;
+  }
+  .form-panel {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 2.2rem;
+  }
+  @media (max-width: 860px) {
+    .contact-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

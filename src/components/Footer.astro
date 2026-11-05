@@ -1,0 +1,100 @@
+---
+const year = new Date().getFullYear();
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+<footer class="site-footer">
+  <div class="plank-rule"></div>
+  <div class="wrap grid">
+    <div>
+      <p class="wordmark-top">Ferris Decking Co.</p>
+      <p class="muted">Custom decks, composite decking, restoration, and outdoor<br />structures — serving Lancaster County, PA.</p>
+    </div>
+    <div>
+      <p class="col-head">Reach us</p>
+      <p><a class="tel" href="tel:+17175550183">(717) 555-0183</a></p>
+      <p><a href="mailto:hello@ferrisdecking.example">hello@ferrisdecking.example</a></p>
+      <p class="muted">Mon&ndash;Fri, 8am&ndash;5pm &middot; Saturdays by appointment</p>
+    </div>
+    <div>
+      <p class="col-head">Explore</p>
+      <ul>
+        <li><a href={`${base}/services/`}>Services</a></li>
+        <li><a href={`${base}/portfolio/`}>Portfolio</a></li>
+        <li><a href={`${base}/about/`}>About</a></li>
+        <li><a href={`${base}/contact/`}>Contact</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="wrap bottom">
+    <p>&copy; {year} Ferris Decking Co. &middot; Lancaster County, PA</p>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    background: var(--walnut-950);
+    color: rgba(250, 244, 233, 0.82);
+    margin-top: 6rem;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr 1fr;
+    gap: 2.5rem;
+    padding-block: 3.2rem 2rem;
+  }
+  .wordmark-top {
+    font-family: var(--font-display);
+    font-size: 1.3rem;
+    color: var(--paper);
+    margin: 0 0 0.6em;
+  }
+  .muted {
+    color: rgba(250, 244, 233, 0.58);
+    font-size: 0.92rem;
+  }
+  .col-head {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--gold-400);
+    margin: 0 0 0.9em;
+  }
+  .tel {
+    font-family: var(--font-display);
+    font-size: 1.3rem;
+    color: var(--paper);
+    text-decoration: none;
+  }
+  footer p {
+    margin: 0 0 0.5em;
+  }
+  footer a {
+    color: rgba(250, 244, 233, 0.82);
+    text-decoration: none;
+  }
+  footer a:hover {
+    color: var(--paper);
+    text-decoration: underline;
+  }
+  footer ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5em;
+  }
+  .bottom {
+    border-top: 1px solid rgba(250, 244, 233, 0.12);
+    padding-block: 1.2rem;
+    font-size: 0.82rem;
+    color: rgba(250, 244, 233, 0.5);
+  }
+  @media (max-width: 760px) {
+    .grid {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+  }
+</style>

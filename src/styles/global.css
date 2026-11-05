@@ -1,0 +1,165 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,340;0,9..144,460;0,9..144,600;1,9..144,500&family=Archivo:wght@400;500;600;700&display=swap');
+
+:root {
+  --cream: #f3ead9;
+  --paper: #faf4e9;
+  --walnut-950: #1c130d;
+  --walnut-900: #241810;
+  --walnut-700: #3c2a1c;
+  --walnut-500: #6c4b34;
+  --rust-600: #bb5a2a;
+  --rust-700: #9b4720;
+  --gold-400: #cf9b47;
+  --line: rgba(28, 19, 13, 0.14);
+  --line-strong: rgba(28, 19, 13, 0.28);
+
+  --font-display: 'Fraunces', 'Iowan Old Style', serif;
+  --font-body: 'Archivo', -apple-system, sans-serif;
+
+  --measure: 72ch;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: var(--cream);
+  color: var(--walnut-900);
+  font-family: var(--font-body);
+  font-size: 1.0625rem;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  background-image: radial-gradient(circle at 16% 4%, rgba(207, 155, 71, 0.14), transparent 45%),
+    radial-gradient(circle at 86% 0%, rgba(155, 71, 32, 0.08), transparent 40%);
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-display);
+  font-weight: 460;
+  color: var(--walnut-950);
+  line-height: 1.08;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+h1 {
+  font-weight: 340;
+}
+
+a {
+  color: inherit;
+}
+
+p {
+  max-width: var(--measure);
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+.wrap {
+  width: min(1120px, 92%);
+  margin-inline: auto;
+}
+
+/* Decorative board-plank divider — a repeating grain stripe, never content. */
+.plank-rule {
+  height: 10px;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--walnut-700) 0 74px,
+    var(--rust-700) 74px 76px,
+    var(--walnut-700) 76px 150px,
+    var(--walnut-500) 150px 152px
+  );
+}
+
+.eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 0.6em;
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--rust-700);
+}
+
+.eyebrow::before {
+  content: '';
+  width: 2.1em;
+  height: 2px;
+  background: var(--rust-600);
+  display: inline-block;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6em;
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 0.95rem;
+  letter-spacing: 0.01em;
+  padding: 0.95em 1.6em;
+  border-radius: 2px;
+  border: 1px solid transparent;
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.btn-primary {
+  background: var(--rust-600);
+  color: var(--paper);
+  box-shadow: 4px 4px 0 0 var(--walnut-950);
+}
+
+.btn-primary:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 0 var(--walnut-950);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--walnut-950);
+  border-color: var(--line-strong);
+}
+
+.btn-ghost:hover {
+  border-color: var(--walnut-950);
+}
+
+.tag {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--walnut-700);
+  background: rgba(155, 71, 32, 0.1);
+  border: 1px solid rgba(155, 71, 32, 0.25);
+  padding: 0.3em 0.7em;
+  border-radius: 999px;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}

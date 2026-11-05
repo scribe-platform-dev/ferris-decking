@@ -1,0 +1,107 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { getCollection, render } from 'astro:content';
+
+const services = (await getCollection('services')).sort((a, b) => (a.data.order ?? 99) - (b.data.order ?? 99));
+const rendered = await Promise.all(services.map((s) => render(s)));
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+<Layout
+  title="Services | Ferris Decking Co."
+  description="Custom deck design and build, composite decking, deck restoration and repair, and pergolas & outdoor structures across Lancaster County, PA."
+>
+  <section class="wrap hero">
+    <p class="eyebrow">Services</p>
+    <h1>One trade, done four different ways</h1>
+    <p class="lede">Every job starts with the same thing: a look underneath before we talk about what's on top.</p>
+  </section>
+
+  <div class="wrap services-list">
+    {services.map((s, i) => {
+      const { Content } = rendered[i];
+      return (
+        <article class="service-row" id={s.id.replace(/\.md$/, '')}>
+          <span class="service-number">{String(i + 1).padStart(2, '0')}</span>
+          <div>
+            <h2>{s.data.title}</h2>
+            <p class="summary">{s.data.summary}</p>
+            <div class="body">
+              <Content />
+            </div>
+          </div>
+        </article>
+      );
+    })}
+  </div>
+
+  <section class="wrap cta">
+    <h2>Not sure which one you need?</h2>
+    <p>Tell us what you're picturing — we'll tell you what it takes to get there.</p>
+    <a class="btn btn-primary" href={`${base}/contact/`}>Get a free estimate</a>
+  </section>
+</Layout>
+
+<style>
+  .hero {
+    padding-block: 4rem 2.5rem;
+    max-width: 50ch;
+  }
+  .hero h1 {
+    font-size: clamp(2rem, 3.6vw, 2.8rem);
+    margin: 0.3em 0 0.4em;
+  }
+  .lede {
+    color: var(--walnut-700);
+    font-size: 1.05rem;
+  }
+  .services-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2.5rem;
+    padding-bottom: 4rem;
+  }
+  .service-row {
+    display: grid;
+    grid-template-columns: 90px 1fr;
+    gap: 1.5rem;
+    padding-top: 2.5rem;
+    border-top: 1px solid var(--line);
+  }
+  .service-row:first-child {
+    border-top: none;
+    padding-top: 0;
+  }
+  .service-number {
+    font-family: var(--font-display);
+    font-size: 2.2rem;
+    color: var(--gold-400);
+    -webkit-text-stroke: 1px var(--rust-600);
+  }
+  .service-row h2 {
+    font-size: 1.6rem;
+    margin-bottom: 0.4em;
+  }
+  .summary {
+    color: var(--rust-700);
+    font-weight: 600;
+    font-size: 1rem;
+  }
+  .body :global(p) {
+    color: var(--walnut-700);
+    max-width: 62ch;
+  }
+  .cta {
+    text-align: center;
+    padding-block: 4.5rem;
+    border-top: 1px solid var(--line);
+  }
+  .cta p {
+    margin: 0.8em auto 1.6rem;
+    color: var(--walnut-700);
+  }
+  @media (max-width: 640px) {
+    .service-row {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

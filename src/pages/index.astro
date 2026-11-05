@@ -1,0 +1,314 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
+
+const services = (await getCollection('services')).sort((a, b) => (a.data.order ?? 99) - (b.data.order ?? 99));
+const projects = (await getCollection('projects')).sort((a, b) => (a.data.order ?? 99) - (b.data.order ?? 99)).slice(0, 3);
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+
+const business = {
+  '@context': 'https://schema.org',
+  '@type': 'HomeAndConstructionBusiness',
+  name: 'Ferris Decking Co.',
+  url: 'https://scribe-platform-dev.github.io/ferris-decking/',
+  telephone: '+1-717-555-0183',
+  areaServed: 'Lancaster County, PA',
+};
+---
+<Layout
+  title="Ferris Decking Co. | Custom Deck Builder in Lancaster, PA"
+  description="Custom decks, composite decking, restoration, and pergolas built around Lancaster County, PA. Free estimates, built to last."
+>
+  <script type="application/ld+json" set:html={JSON.stringify(business)} />
+
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div class="hero-copy">
+        <p class="eyebrow">Lancaster County, PA</p>
+        <h1>Decks built to <em>outlast</em> the first winter you second-guess them.</h1>
+        <p class="lede">
+          Ferris Decking designs and builds custom decks, composite decking, pergolas, and
+          restorations for homes across Lancaster County — framed properly, permitted
+          properly, and finished the way you pictured it.
+        </p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href={`${base}/contact/`}>Get a free estimate</a>
+          <a class="btn btn-ghost" href={`${base}/portfolio/`}>See the work</a>
+        </div>
+      </div>
+      <div class="hero-panel" aria-hidden="true">
+        <div class="plank-stack">
+          <span></span><span></span><span></span><span></span><span></span><span></span>
+        </div>
+        <p class="hero-panel-label">01 — Design</p>
+        <p class="hero-panel-label">02 — Permit</p>
+        <p class="hero-panel-label">03 — Build</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="plank-rule"></div>
+
+  <section class="wrap strip">
+    <div><strong>Fully insured</strong><span>Ask us for a current certificate</span></div>
+    <div><strong>Township permits</strong><span>Pulled before footings go in</span></div>
+    <div><strong>Free estimates</strong><span>On site, no obligation</span></div>
+  </section>
+
+  <section class="wrap section">
+    <div class="section-head">
+      <p class="eyebrow">What we build</p>
+      <h2>Four ways to get your yard back</h2>
+    </div>
+    <div class="service-grid">
+      {services.map((s, i) => (
+        <a class="service-card" href={`${base}/services/#${s.id.replace(/\.md$/, '')}`}>
+          <span class="service-number">{String(i + 1).padStart(2, '0')}</span>
+          <h3>{s.data.title}</h3>
+          <p>{s.data.summary}</p>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <section class="band">
+    <div class="wrap band-grid">
+      <div>
+        <p class="eyebrow eyebrow-light">Recent work</p>
+        <h2>From Lititz to the city, one job at a time</h2>
+      </div>
+      <a class="btn btn-ghost btn-ghost-light" href={`${base}/portfolio/`}>View full portfolio</a>
+    </div>
+    <div class="wrap project-row">
+      {projects.map((p) => (
+        <a class="project-card" href={`${base}/portfolio/`}>
+          <span class="tag tag-light">{p.data.projectType}</span>
+          <h3>{p.data.title}</h3>
+          <p class="muted">{p.data.location}{p.data.size ? ` · ${p.data.size}` : ''}</p>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <section class="wrap cta">
+    <h2>Have a yard in mind?</h2>
+    <p>Tell us about it — we'll come take a look and put a real number on it.</p>
+    <a class="btn btn-primary" href={`${base}/contact/`}>Start your project</a>
+  </section>
+</Layout>
+
+<style>
+  .hero {
+    padding-block: 4.5rem 3.5rem;
+  }
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 1.2fr 0.8fr;
+    gap: 3rem;
+    align-items: center;
+  }
+  .hero-copy h1 {
+    font-size: clamp(2.4rem, 4.4vw, 3.6rem);
+    margin-block: 0.4em 0.5em;
+  }
+  .hero-copy h1 em {
+    font-style: italic;
+    color: var(--rust-600);
+  }
+  .lede {
+    font-size: 1.1rem;
+    color: var(--walnut-700);
+    max-width: 38ch;
+  }
+  .hero-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1.8rem;
+    flex-wrap: wrap;
+  }
+  .hero-panel {
+    position: relative;
+    background: var(--walnut-950);
+    border-radius: 4px;
+    padding: 2.2rem 1.8rem;
+    transform: rotate(1.2deg);
+  }
+  .plank-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    margin-bottom: 1.6rem;
+  }
+  .plank-stack span {
+    height: 14px;
+    border-radius: 1px;
+    background: linear-gradient(90deg, var(--gold-400), var(--rust-600) 60%, var(--walnut-500));
+    opacity: 0.9;
+  }
+  .plank-stack span:nth-child(even) {
+    width: 92%;
+  }
+  .hero-panel-label {
+    font-family: var(--font-display);
+    color: var(--paper);
+    font-size: 1.05rem;
+    margin: 0.5em 0;
+    padding-left: 0.8em;
+    border-left: 2px solid var(--rust-600);
+  }
+
+  .strip {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    padding-block: 2.6rem;
+  }
+  .strip div {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25em;
+  }
+  .strip strong {
+    font-family: var(--font-display);
+    font-size: 1.15rem;
+  }
+  .strip span {
+    color: var(--walnut-700);
+    font-size: 0.88rem;
+  }
+
+  .section {
+    padding-block: 4rem;
+  }
+  .section-head {
+    margin-bottom: 2.4rem;
+    max-width: 44ch;
+  }
+  .section-head h2 {
+    font-size: clamp(1.7rem, 2.8vw, 2.3rem);
+    margin-top: 0.3em;
+  }
+  .service-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.25rem;
+  }
+  .service-card {
+    display: block;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    padding: 1.6rem 1.4rem;
+    text-decoration: none;
+    color: inherit;
+    transition: border-color 0.15s ease, transform 0.15s ease;
+  }
+  .service-card:hover {
+    border-color: var(--rust-600);
+    transform: translateY(-3px);
+  }
+  .service-number {
+    font-family: var(--font-display);
+    color: var(--gold-400);
+    -webkit-text-stroke: 1px var(--rust-600);
+    font-size: 1.6rem;
+  }
+  .service-card h3 {
+    font-size: 1.15rem;
+    margin: 0.6em 0 0.4em;
+  }
+  .service-card p {
+    font-size: 0.92rem;
+    color: var(--walnut-700);
+    margin: 0;
+  }
+
+  .band {
+    background: var(--walnut-950);
+    color: var(--paper);
+    padding-block: 4rem;
+  }
+  .band-grid {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 2rem;
+    margin-bottom: 2.4rem;
+  }
+  .eyebrow-light {
+    color: var(--gold-400);
+  }
+  .band-grid h2 {
+    color: var(--paper);
+    font-size: clamp(1.6rem, 2.6vw, 2.1rem);
+    margin-top: 0.3em;
+    max-width: 24ch;
+  }
+  .btn-ghost-light {
+    color: var(--paper);
+    border-color: rgba(250, 244, 233, 0.35);
+    white-space: nowrap;
+  }
+  .btn-ghost-light:hover {
+    border-color: var(--paper);
+  }
+  .project-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.25rem;
+  }
+  .project-card {
+    display: block;
+    background: rgba(250, 244, 233, 0.04);
+    border: 1px solid rgba(250, 244, 233, 0.16);
+    border-radius: 3px;
+    padding: 1.5rem;
+    text-decoration: none;
+    color: var(--paper);
+  }
+  .project-card:hover {
+    border-color: var(--gold-400);
+  }
+  .tag-light {
+    color: var(--gold-400);
+    background: rgba(207, 155, 71, 0.14);
+    border-color: rgba(207, 155, 71, 0.4);
+  }
+  .project-card h3 {
+    color: var(--paper);
+    font-size: 1.05rem;
+    margin: 0.7em 0 0.3em;
+  }
+  .muted {
+    color: rgba(250, 244, 233, 0.6);
+    font-size: 0.88rem;
+    margin: 0;
+  }
+
+  .cta {
+    text-align: center;
+    padding-block: 5rem;
+  }
+  .cta h2 {
+    font-size: clamp(1.8rem, 3vw, 2.5rem);
+  }
+  .cta p {
+    margin: 0.8em auto 1.8rem;
+    color: var(--walnut-700);
+  }
+
+  @media (max-width: 900px) {
+    .hero-grid {
+      grid-template-columns: 1fr;
+    }
+    .service-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .project-row {
+      grid-template-columns: 1fr;
+    }
+    .strip {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

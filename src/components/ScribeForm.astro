@@ -1,0 +1,234 @@
+---
+export interface Props {
+  site: string;
+  collection: string;
+  turnstileSiteKey: string;
+  fields: Array<{ name: string; label?: string; type: string; required?: boolean; options?: Array<string | { value: string; label?: string }> }>;
+  apiBase?: string;
+  submitLabel?: string;
+}
+
+// Where forms post. No default in a production build, deliberately — a Site
+// can never post a Visitor's message to the wrong Scribe by omission.
+function scribeApiBase(): string {
+  const configured = import.meta.env.PUBLIC_SCRIBE_API_URL?.trim();
+  if (configured) return configured;
+  if (import.meta.env.PROD) {
+    throw new Error(
+      'PUBLIC_SCRIBE_API_URL is unset. Set it as an organisation variable on the GitHub org that owns ' +
+        'this repo — it has no default in a production build, so this Site posts nowhere by accident.',
+    );
+  }
+  return 'http://localhost:3060';
+}
+
+const { site, collection, turnstileSiteKey, fields, apiBase: apiBaseProp, submitLabel = 'Send my request' } = Astro.props;
+const apiBase = apiBaseProp ?? scribeApiBase();
+const formId = `scribe-form-${collection}`;
+
+function labelFor(f: { name: string; label?: string }) {
+  return (
+    f.label ??
+    f.name
+      .replace(/([a-z0-9])([A-Z])/g, '$1 $2')
+      .replace(/[_-]+/g, ' ')
+      .replace(/^./, (c) => c.toUpperCase())
+  );
+}
+function inputType(f: { name: string; type: string }) {
+  if (f.type === 'number') return 'number';
+  if (/mail/i.test(f.name)) return 'email';
+  if (/phone|mobile|tel|cell/i.test(f.name)) return 'tel';
+  return 'text';
+}
+function optionValue(o: string | { value: string; label?: string }) {
+  return typeof o === 'string' ? o : o.value;
+}
+function optionLabel(o: string | { value: string; label?: string }) {
+  return typeof o === 'string' ? o : (o.label ?? o.value);
+}
+---
+<form id={formId} class="scribe-form" data-site={site} data-collection={collection} data-endpoint={`${apiBase}/api/submissions`} data-scribe-retry>
+  {fields.map((f) =>
+    f.type === 'boolean' ? (
+      <label class="field checkbox">
+        <input name={f.name} type="checkbox" />
+        <span>{labelFor(f)}</span>
+      </label>
+    ) : f.type === 'text' ? (
+      <label class="field">
+        <span>{labelFor(f)}{f.required && <span class="req">*</span>}</span>
+        <textarea name={f.name} required={f.required} rows={5}></textarea>
+      </label>
+    ) : f.type === 'select' ? (
+      <label class="field">
+        <span>{labelFor(f)}{f.required && <span class="req">*</span>}</span>
+        <select name={f.name} required={f.required}>
+          <option value="">Choose one&hellip;</option>
+          {(f.options ?? []).map((o) => (
+            <option value={optionValue(o)}>{optionLabel(o)}</option>
+          ))}
+        </select>
+      </label>
+    ) : (
+      <label class="field">
+        <span>{labelFor(f)}{f.required && <span class="req">*</span>}</span>
+        <input name={f.name} type={inputType(f)} required={f.required} />
+      </label>
+    ),
+  )}
+  <div class="cf-turnstile" data-sitekey={turnstileSiteKey}></div>
+  <button type="submit" class="btn btn-primary">{submitLabel}</button>
+  <p class="form-status" role="status" aria-live="polite"></p>
+</form>
+
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+<script is:inline define:vars={{ formId }}>
+  (function () {
+    const form = document.getElementById(formId);
+    if (!form) return;
+    const statusEl = form.querySelector('.form-status');
+    const say = (m) => {
+      if (statusEl) statusEl.textContent = m;
+    };
+
+    const { site, collection, endpoint } = form.dataset;
+    const storageKey = `scribe_pending_submission_${site}_${collection}`;
+
+    const UNREACHABLE = "We couldn't send that yet — it's saved and will retry.";
+    const GENERIC = "We couldn't send that. Please try again, or call or email us instead.";
+
+    const readPending = () => {
+      try {
+        return JSON.parse(localStorage.getItem(storageKey)) ?? null;
+      } catch {
+        return null;
+      }
+    };
+    const savePending = (p) => {
+      try {
+        localStorage.setItem(storageKey, JSON.stringify(p));
+      } catch {}
+    };
+    const clearPending = () => {
+      try {
+        localStorage.removeItem(storageKey);
+      } catch {}
+    };
+
+    function collect() {
+      const payload = {};
+      for (const el of form.elements) {
+        if (!el.name) continue;
+        if (el.type === 'checkbox') payload[el.name] = el.checked;
+        else if (el.type === 'number') payload[el.name] = el.value === '' ? null : Number(el.value);
+        else payload[el.name] = el.value;
+      }
+      return payload;
+    }
+
+    async function send(payload) {
+      const url = `${endpoint}?site=${encodeURIComponent(site)}&collection=${encodeURIComponent(collection)}`;
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      if (res.ok) return;
+      const body = await res.json().catch(() => ({}));
+      const error = new Error((body.error ?? '').trim() || GENERIC);
+      error.answered = true;
+      error.retryable = res.status >= 500;
+      throw error;
+    }
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const payload = collect();
+      say('Sending…');
+      try {
+        await send(payload);
+        clearPending();
+        form.reset();
+        say("Thanks — we'll be in touch soon.");
+      } catch (err) {
+        if (err.answered) {
+          if (err.retryable) savePending(payload);
+          say(err.message);
+          return;
+        }
+        savePending(payload);
+        say(UNREACHABLE);
+      }
+    });
+
+    (async function retryPending() {
+      const pending = readPending();
+      if (!pending) return;
+      try {
+        await send(pending);
+        clearPending();
+        say("Thanks — we'll be in touch soon.");
+      } catch (err) {
+        if (err.answered && !err.retryable) {
+          clearPending();
+          say(err.message);
+        }
+      }
+    })();
+  })();
+</script>
+
+<style>
+  .scribe-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+    max-width: 32rem;
+  }
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45em;
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: var(--walnut-700);
+  }
+  .field.checkbox {
+    flex-direction: row;
+    align-items: center;
+  }
+  .req {
+    color: var(--rust-600);
+    margin-left: 0.2em;
+  }
+  input,
+  textarea,
+  select {
+    font-family: var(--font-body);
+    font-size: 1rem;
+    font-weight: 400;
+    color: var(--walnut-950);
+    background: var(--paper);
+    border: 1px solid var(--line-strong);
+    border-radius: 2px;
+    padding: 0.75em 0.9em;
+  }
+  input:focus,
+  textarea:focus,
+  select:focus {
+    outline: none;
+    border-color: var(--rust-600);
+    box-shadow: 0 0 0 3px rgba(187, 90, 42, 0.18);
+  }
+  .form-status {
+    min-height: 1.2em;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--rust-700);
+    margin: 0;
+  }
+  button[type='submit'] {
+    align-self: flex-start;
+  }
+</style>
