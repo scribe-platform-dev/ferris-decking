@@ -9,44 +9,43 @@ collections:
     label: Inquiries
     path: content/inquiries
     format: yaml
+    form: true
     fields:
       - name: name
         type: string
         required: true
-        hidden: false
-        readonly: false
-        isBody: false
       - name: email
         type: string
         required: true
-        hidden: false
-        readonly: false
-        isBody: false
+      - name: phone
+        type: string
+        label: Phone
+      - name: service
+        type: select
+        label: What do you need?
+        options:
+          - Custom Deck
+          - Composite Deck
+          - Deck Restoration
+          - Pergola & Structure
+          - Not sure yet
       - name: message
         type: text
         required: true
-        hidden: false
-        readonly: false
-        isBody: false
-    form: true
     workflow:
       states:
         - name: new
           label: New
           kind: needs-you
-          hidden: false
         - name: open
           label: Open
           kind: needs-you
-          hidden: false
         - name: waiting
           label: Waiting on customer
           kind: waiting
-          hidden: false
         - name: done
           label: Done
           kind: closed
-          hidden: false
         - name: archived
           label: Archived
           kind: closed
@@ -102,14 +101,23 @@ collections:
       - name: title
         type: string
         required: true
+        hidden: false
+        readonly: false
+        isBody: false
       - name: location
         type: string
-        required: true
         label: Town/area
+        required: true
+        hidden: false
+        readonly: false
+        isBody: false
       - name: projectType
         type: select
-        required: true
         label: Project type
+        required: true
+        hidden: false
+        readonly: false
+        isBody: false
         options:
           - Custom Deck
           - Composite Deck
@@ -118,10 +126,22 @@ collections:
       - name: size
         type: string
         label: Size (e.g. 320 sq ft)
+        required: false
+        hidden: false
+        readonly: false
+        isBody: false
       - name: order
         type: number
         label: Display order
+        required: false
+        hidden: false
+        readonly: false
+        isBody: false
       - name: summary
         type: rich-text
-        isBody: true
         label: Project story
+        required: false
+        hidden: false
+        readonly: false
+        isBody: true
+    form: false
