@@ -51,3 +51,28 @@ collections:
           label: Archived
           kind: closed
           hidden: true
+  - name: services
+    label: Services
+    description: The services shown on the Services page.
+    path: content/services
+    format: yaml-frontmatter
+    view:
+      primary: title
+      fields:
+        - title
+        - summary
+    fields:
+      - name: title
+        type: string
+        required: true
+      - name: summary
+        type: text
+        required: true
+        label: Short summary
+      - name: order
+        type: number
+        label: Display order
+      - name: body
+        type: rich-text
+        isBody: true
+        label: Full description
