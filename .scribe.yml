@@ -1,0 +1,41 @@
+site: ferris-decking
+environment: development
+turnstileSiteKey: 0x4AAAAAAFz0-yL9s-mDkI8O
+umamiWebsiteId: f9ccf4ad-15e2-484d-910a-92758af883eb
+umamiScriptUrl: https://analytics.weaverdigital.io/script.js
+contactCollection: inquiries
+collections:
+  - name: posts
+    label: Posts
+    path: content/posts
+    format: yaml-frontmatter
+    view:
+      primary: title
+      sort: date
+    fields:
+      - name: title
+        type: string
+        required: true
+      - name: date
+        type: date
+        required: true
+      - name: heroImage
+        type: image
+      - name: body
+        type: rich-text
+        isBody: true
+  - name: inquiries
+    label: Inquiries
+    path: content/inquiries
+    format: yaml
+    form: true
+    fields:
+      - name: name
+        type: string
+        required: true
+      - name: email
+        type: string
+        required: true
+      - name: message
+        type: text
+        required: true
