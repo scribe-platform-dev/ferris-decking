@@ -65,14 +65,63 @@ collections:
       - name: title
         type: string
         required: true
+        hidden: false
+        readonly: false
+        isBody: false
       - name: summary
         type: text
-        required: true
         label: Short summary
+        required: true
+        hidden: false
+        readonly: false
+        isBody: false
       - name: order
         type: number
         label: Display order
+        required: false
+        hidden: false
+        readonly: false
+        isBody: false
       - name: body
         type: rich-text
-        isBody: true
         label: Full description
+        required: false
+        hidden: false
+        readonly: false
+        isBody: true
+    form: false
+  - name: projects
+    label: Portfolio
+    description: Completed projects shown on the Portfolio page.
+    path: content/projects
+    format: yaml-frontmatter
+    view:
+      primary: title
+      sort: order
+    fields:
+      - name: title
+        type: string
+        required: true
+      - name: location
+        type: string
+        required: true
+        label: Town/area
+      - name: projectType
+        type: select
+        required: true
+        label: Project type
+        options:
+          - Custom Deck
+          - Composite Deck
+          - Deck Restoration
+          - Pergola & Structure
+      - name: size
+        type: string
+        label: Size (e.g. 320 sq ft)
+      - name: order
+        type: number
+        label: Display order
+      - name: summary
+        type: rich-text
+        isBody: true
+        label: Project story
